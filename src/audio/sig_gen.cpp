@@ -6,12 +6,12 @@
 
 namespace audio {
 
-monosignal generate_monosignal(const std::vector<sig_freq> &waves, float time, uint32_t samples_per_sec,
+monosignal generate_monosignal(const std::vector<sig_freq> &waves, double time, uint32_t samples_per_sec,
     bool normalize, bool always_normalize) {
 
     monosignal sig{samples_per_sec, std::vector(std::size_t(time * samples_per_sec), 0.f)};
 
-    auto time_step = 1.f / samples_per_sec;
+    auto time_step = 1. / samples_per_sec;
     for (std::size_t i = 0; i < sig.data.size(); i++) {
         for (const auto &w : waves) {
             sig.data[i] += w.amplitude * std::cos(2 * std::numbers::pi * w.freq * i * time_step + w.phase);
