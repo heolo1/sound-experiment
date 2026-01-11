@@ -4,7 +4,7 @@
 
 #include "miniaudio.h"
 
-#include "audio/base.hpp"
+#include "audio.hpp"
 
 namespace audio {
 

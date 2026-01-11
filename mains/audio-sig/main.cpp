@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "audio/base.hpp"
-#include "audio/sig_gen.hpp"
+#include "audio.hpp"
 
 int main() {
     std::vector<audio::sig_freq> freqs{{750, 0.115, 0}, {937, 0.09, 0}};

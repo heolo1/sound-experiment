@@ -1,8 +1,7 @@
 #include <filesystem>
 #include <iostream>
 
-#include "audio/wav.hpp"
-#include "audio/monosignal.hpp"
+#include "audio.hpp"
 
 const std::string test_file_name = "data/squeak.wav";
 
