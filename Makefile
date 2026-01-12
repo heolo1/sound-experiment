@@ -53,7 +53,7 @@ MNS_DIR	  := ./mains
 
 TARGET    := $(BIN_DIR)/lib$(PRJ_NAME).a
 MAINS     := $(notdir $(wildcard $(MNS_DIR)/*))
-MAIN0     := audio-display # this should be in MAINS
+MAIN0     := audio-gen # this should be in MAINS
 
 CSRCS     := $(call GET_FILES,$(SRC_DIR),c)
 CXXSRCS   := $(call GET_FILES,$(SRC_DIR),cpp)
