@@ -40,6 +40,7 @@ int main() {
     std::cout << "Press enter to continue...";
     std::getchar();
 
+    SDL_DestroyTexture(wave_texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

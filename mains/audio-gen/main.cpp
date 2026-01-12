@@ -305,4 +305,9 @@ int main() {
             std::cout << "Unrecognized command: '" << line << "'\n";
         }
     }
+
+    SDL_DestroyTexture(wave_texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }
