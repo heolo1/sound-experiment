@@ -31,6 +31,7 @@ struct wav_signal {
     explicit wav_signal(const monosignal &);
 
     monosignal to_monosignal() const;
+    double duration() const;
 
     wav_signal_fmt fmt;
     std::vector<unsigned char> data;

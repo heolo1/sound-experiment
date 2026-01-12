@@ -21,6 +21,8 @@ struct monosignal {
     std::vector<float> data;
 
     audio_buffer make_audio_buffer() const;
+    std::vector<wave_data> fourier_transform() const;
+    double duration() const;
 };
 
 /**

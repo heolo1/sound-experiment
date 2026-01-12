@@ -88,6 +88,10 @@ monosignal wav_signal::to_monosignal() const {
     };
 }
 
+double wav_signal::duration() const {
+    return (double)data.size() / fmt.samples_per_sec;
+}
+
 static std::string read_string(std::istream &is, std::size_t n) {
     std::string read(n, '\0');
     is.read(read.data(), std::streamsize(n));

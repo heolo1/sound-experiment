@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <vector>
 
 #include "miniaudio/miniaudio.h"
 
@@ -22,6 +23,14 @@ audio_buffer monosignal::make_audio_buffer() const {
     buffer_config.sampleRate = samples_per_sec;
 
     return audio_buffer(&buffer_config);
+}
+
+std::vector<wave_data> monosignal::fourier_transform() const {
+    return naive_fourier_transform(data.size(), data.data(), 1, samples_per_sec);
+}
+
+double monosignal::duration() const {
+    return (double)data.size() / samples_per_sec;
 }
 
 monosignal generate_monosignal(const std::vector<wave_data> &waves, double time, uint32_t samples_per_sec,
