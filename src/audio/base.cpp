@@ -44,4 +44,20 @@ sound_obj::~sound_obj() {
     }
 }
 
+device::device(const ma_device_config *device_config) : init_result_{MA_ERROR} {
+    if ((init_result_ = ma_device_init(nullptr, device_config, &device_))) {
+        throw std::runtime_error("device init failure");
+    }
+    ma_device_start(&device_);
+}
+
+device::~device() {
+    if (ok()) {
+        if (ma_device_is_started(&device_)) {
+            ma_device_stop(&device_);
+        }
+        ma_device_uninit(&device_);
+    }
+}
+
 }

@@ -117,4 +117,41 @@ private:
     ma_result init_result_;
 };
 
+struct device {
+    device(const ma_device_config *);
+    ~device();
+    device(device &&) = default;
+    device &operator=(device &&) = default;
+    device(const device &) = delete;
+    device &operator=(const device &) = delete;
+
+    ma_device *operator&() {
+        return &device_;
+    }
+
+    const ma_device *operator&() const {
+        return &device_;
+    }
+
+    bool ok() const {
+        return init_result_ == MA_SUCCESS;
+    }
+
+    operator bool() const {
+        return ok();
+    }
+
+    bool operator!() const{
+        return !ok();
+    }
+
+    ma_result init_result() const {
+        return init_result_;
+    }
+
+private:
+    ma_device device_;
+    ma_result init_result_;
+};
+
 }
