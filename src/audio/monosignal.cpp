@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "miniaudio.h"
+#include "miniaudio/miniaudio.h"
 
 #include "audio.hpp"
 

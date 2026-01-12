@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "miniaudio.h"
+#include "miniaudio/miniaudio.h"
 
 #include "audio.hpp"
 

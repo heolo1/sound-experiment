@@ -13,7 +13,7 @@
 #include <thread>
 #include <vector>
 
-#include "miniaudio.h"
+#include "miniaudio/miniaudio.h"
 
 constexpr int wav_OK = 0;
 constexpr int wav_BAD_ID = 1;

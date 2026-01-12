@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "miniaudio.h"
+#include "miniaudio/miniaudio.h"
 
 namespace audio {
 

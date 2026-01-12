@@ -9,7 +9,7 @@ endef
 define SRC_RULE
 -include $(BLD_DIR)/$1.d
 $(BLD_DIR)/$1.o: $1 | $(BLD_DIR)/$(shell dirname $1)
-	$($2) -I$(INCL_DIR) -I$(EHEAD_DIR) $(addprefix -I,$3) -c -fPIC -MMD -MF $(BLD_DIR)/$1.d -o $$@ $$< $($(2)FLAGS)
+	$($2) -I$(INCL_DIR) -I$(EXT_DIR) $(addprefix -I,$3) -c -fPIC -MMD -MF $(BLD_DIR)/$1.d -o $$@ $$< $($(2)FLAGS)
 endef
 
 # $1 is the name of a main (e.g. $(MAIN0))
@@ -46,7 +46,7 @@ PRJ_NAME  := $(notdir $(abspath .))
 
 SRC_DIR   := ./src
 INCL_DIR  := ./include
-EHEAD_DIR := ./extheaders
+EXT_DIR   := ./ext
 BLD_DIR   := ./build
 BIN_DIR   := ./bin
 MNS_DIR	  := ./mains

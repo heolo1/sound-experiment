@@ -1,6 +1,6 @@
 #pragma once
 
-#include "miniaudio.h"
+#include "miniaudio/miniaudio.h"
 
 namespace audio {
 
