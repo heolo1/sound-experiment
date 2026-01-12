@@ -39,7 +39,7 @@ endef
 SHELL     := /bin/sh
 CC        := gcc
 CXX       := g++
-CPPFLAGS  := -g -Wall -pedantic -lpthread -lm
+CPPFLAGS  := -g -Wall -pedantic -Ofast -lpthread -lm $(shell pkg-config --libs sdl2)
 CFLAGS    := $(CPPFLAGS) -std=c17 
 CXXFLAGS  := $(CPPFLAGS) -std=c++20
 PRJ_NAME  := $(notdir $(abspath .))
@@ -53,7 +53,7 @@ MNS_DIR	  := ./mains
 
 TARGET    := $(BIN_DIR)/lib$(PRJ_NAME).a
 MAINS     := $(notdir $(wildcard $(MNS_DIR)/*))
-MAIN0     := audio-read-write # this should be in MAINS
+MAIN0     := audio-display # this should be in MAINS
 
 CSRCS     := $(call GET_FILES,$(SRC_DIR),c)
 CXXSRCS   := $(call GET_FILES,$(SRC_DIR),cpp)
