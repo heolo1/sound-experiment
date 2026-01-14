@@ -9,19 +9,38 @@ endef
 define SRC_RULE
 -include $(BLD_DIR)/$1.d
 $(BLD_DIR)/$1.o: $1 | $(BLD_DIR)/$(shell dirname $1)
-	$($2) -I$(INCL_DIR) -I$(EXT_DIR) $(addprefix -I,$3) -c -fPIC -MMD -MF $(BLD_DIR)/$1.d -o $$@ $$< $($(2)FLAGS)
+	$($2) -I$(INCL_DIR) -I$(EXT_DIR) $(addprefix -I,$3) -c -MMD -MF $(BLD_DIR)/$1.d -o $$@ $$< $($(2)FLAGS)
 endef
 
 # $1 is the name of a main (e.g. $(MAIN0))
 define MAIN_RULE
-MSRCS := $(call GET_FILES,$(MNS_DIR)/$1,cpp)
-MSRC_DIRS := $$(shell dirname $$(MSRCS) | sort -u)
+MCXXSRCS := $(call GET_FILES,$(MNS_DIR)/$1,cpp)
+MCUSRCS  := $(call GET_FILES,$(MNS_DIR)/$1,cu)
+
+ifneq ($$(strip $$(MCXXSRCS) $$(MCUSRCS)),)
+MSRC_DIRS := $$(shell dirname $$(MCXXSRCS) $$(MCUSRCS) | sort -u)
 
 $$(foreach DIR,$$(MSRC_DIRS),$$(eval $$(call DIR_RULE,$$(DIR))))
-$$(foreach SRC,$$(MSRCS),$$(eval $$(call SRC_RULE,$$(SRC),CXX,$(MNS_DIR)/$1)))
 
-$(BIN_DIR)/$(PRJ_NAME)-$1: $$(MSRCS:%=$(BLD_DIR)/%.o) $(TARGET)
-	$(CXX) -o $$@ $$^ $(CXXFLAGS)
+ifneq ($$(strip $$(MCXXSRCS)),)
+$$(foreach SRC,$$(MCXXSRCS),$$(eval $$(call SRC_RULE,$$(SRC),CXX,$(MNS_DIR)/$1)))
+endif
+
+ifneq ($$(strip $$(MCUSRCS)),)
+$$(foreach SRC,$$(MCUSRCS),$$(eval $$(call SRC_RULE,$$(SRC),NVCC,$(MNS_DIR)/$1)))
+
+MNVDLINK := $(BLD_DIR)/$(MNS_DIR)/$1/dlink.o
+
+$$(MNVDLINK): $$(MCUSRCS:%=$(BLD_DIR)/%.o)
+	$(NVCC) -dlink -o $$@ $$^ $(NVCCFLAGS)
+endif
+
+ifeq ($$(strip $$(MCUSRCS)),)
+$(BIN_DIR)/$(PRJ_NAME)-$1: $$(patsubst %,$(BLD_DIR)/%.o,$$(MCXXSRCS) $$(MCUSRCS)) $(NVDLINK) $(TARGET)
+else
+$(BIN_DIR)/$(PRJ_NAME)-$1: $$(patsubst %,$(BLD_DIR)/%.o,$$(MCXXSRCS) $$(MCUSRCS)) $$(MNVDLINK) $(NVDLINK) $(TARGET)
+endif
+	$(CXX) -o $$@ $$^ $(CXXFLAGS) $(LINKFLAGS) 
 
 .PHONY: $1 run-$1
 
@@ -29,6 +48,7 @@ $1: $(BIN_DIR)/$(PRJ_NAME)-$1
 
 run-$1: $(BIN_DIR)/$(PRJ_NAME)-$1
 	@ $$<
+endif
 endef
 
 # $1 is dir, $2 is ext
@@ -39,9 +59,12 @@ endef
 SHELL     := /bin/sh
 CC        := gcc
 CXX       := g++
+NVCC      := nvcc
 CPPFLAGS  := -g -Wall -pedantic -Ofast -lpthread -lm $(shell pkg-config --libs sdl2)
-CFLAGS    := $(CPPFLAGS) -std=c17 
+CCFLAGS   := $(CPPFLAGS) -std=c17 
 CXXFLAGS  := $(CPPFLAGS) -std=c++20
+NVCCFLAGS := -O3 -arch=sm_75 -std=c++20 -rdc=true -Xcompiler -Ofast,-g,-Wall,-std=c++20
+LINKFLAGS := -L/usr/local/cuda/lib64 -lcuda -lcudart
 PRJ_NAME  := $(notdir $(abspath .))
 
 SRC_DIR   := ./src
@@ -51,22 +74,26 @@ BLD_DIR   := ./build
 BIN_DIR   := ./bin
 MNS_DIR	  := ./mains
 
+NVDLINK   := $(BLD_DIR)/dlink.o
 TARGET    := $(BIN_DIR)/lib$(PRJ_NAME).a
 MAINS     := $(notdir $(wildcard $(MNS_DIR)/*))
 MAIN0     := audio-gen # this should be in MAINS
 
 CSRCS     := $(call GET_FILES,$(SRC_DIR),c)
 CXXSRCS   := $(call GET_FILES,$(SRC_DIR),cpp)
-SRC_DIRS  := $(shell dirname $(CSRCS) $(CXXSRCS) | sort -u)
+CUSRCS    := $(call GET_FILES,$(SRC_DIR),cu)
+SRC_DIRS  := $(shell dirname $(CSRCS) $(CXXSRCS) $(CUSRCS) | sort -u)
 
 # for now, we just assume that each main contains some header files and some source files, and that they are not indexed into a src and include directory.
 
 .SUFFIXES: .cpp .hpp .o .d .a
-.PHONY: all target clean run $(addprefix run-,$(MAINS))
+.PHONY: all target clean run test $(addprefix run-,$(MAINS))
 
 all: $(TARGET) $(addprefix $(BIN_DIR)/$(PRJ_NAME)-,$(MAINS))
 
 target: $(TARGET)
+
+test:
 
 clean:
 	- rm -rf ./$(BLD_DIR)/* ./$(BIN_DIR)/*
@@ -74,8 +101,12 @@ clean:
 $(foreach DIR,$(SRC_DIRS),$(eval $(call DIR_RULE,$(DIR))))
 $(foreach SRC,$(CSRCS),$(eval $(call SRC_RULE,$(SRC),CC)))
 $(foreach SRC,$(CXXSRCS),$(eval $(call SRC_RULE,$(SRC),CXX)))
+$(foreach SRC,$(CUSRCS),$(eval $(call SRC_RULE,$(SRC),NVCC)))
 
-$(TARGET): $(CSRCS:%=$(BLD_DIR)/%.o) $(CXXSRCS:%=$(BLD_DIR)/%.o)
+$(NVDLINK): $(CUSRCS:%=$(BLD_DIR)/%.o)
+	$(NVCC) -dlink -o $@ $^ $(NVCCFLAGS)
+
+$(TARGET): $(patsubst %,$(BLD_DIR)/%.o,$(CSRCS) $(CXXSRCS) $(CUSRCS))
 	$(AR) rcs $@ $^
 
 $(foreach MAIN,$(MAINS),$(eval $(call MAIN_RULE,$(MAIN))))
