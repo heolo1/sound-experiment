@@ -96,9 +96,9 @@ target: $(TARGET)
 test:
 
 clean:
-	- rm -rf ./$(BLD_DIR)/* ./$(BIN_DIR)/*
+	- rm -rf ./$(BLD_DIR) ./$(BIN_DIR)
 
-$(foreach DIR,$(SRC_DIRS),$(eval $(call DIR_RULE,$(DIR))))
+$(foreach DIR,$(BLD_DIR) $(SRC_DIRS),$(eval $(call DIR_RULE,$(DIR))))
 $(foreach SRC,$(CSRCS),$(eval $(call SRC_RULE,$(SRC),CC)))
 $(foreach SRC,$(CXXSRCS),$(eval $(call SRC_RULE,$(SRC),CXX)))
 $(foreach SRC,$(CUSRCS),$(eval $(call SRC_RULE,$(SRC),NVCC)))
