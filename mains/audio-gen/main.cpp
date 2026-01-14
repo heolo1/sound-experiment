@@ -28,6 +28,7 @@ struct state {
 std::vector<state> states;
 std::mutex state_mutex;
 const uint32_t sample_rate = 44100;
+ma_uint32 last_frame_count;
 
 double comp_dphase(double freq) {
     return 2 * std::numbers::pi * freq / sample_rate;
@@ -57,6 +58,7 @@ void callback(ma_device *, void *output, const void *, ma_uint32 frame_count) {
     }
 
     std::lock_guard lock(state_mutex);
+    last_frame_count = frame_count;
     for (auto &state : states) {
         state.curr_phase += frame_count * state.delta_phase;
         state.curr_phase = std::fmod(state.curr_phase, 2 * std::numbers::pi);
@@ -298,6 +300,9 @@ int main() {
                 }
             }
             update_texture(s_display_size, s_display_sept);
+        } else if (words[0] == "lastn") {
+            std::lock_guard lock(state_mutex);
+            std::cout << last_frame_count << '\n';
         } else if (words[0] == "quit") {
             std::cout << "Quitting...\n";
             break;
