@@ -6,9 +6,9 @@ namespace audio {
 
 template <typename T>
 struct wave_data_t {
-    double freq; // in rev/sec
-    double amplitude;
-    double phase; // in radians
+    T freq; // in rev/sec
+    T amplitude;
+    T phase; // in radians
 };
 
 using wave_data = wave_data_t<double>;
