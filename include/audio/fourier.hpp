@@ -28,4 +28,10 @@ std::vector<wave_data> naive_fourier_transform(std::size_t n_samples, const floa
 std::vector<wave_data> naive_fourier_transform_hann(std::size_t n_samples, const float *input, std::size_t in_spacing,
     std::size_t samples_per_sec);
 
+/**
+ * like naive_fourier_transform, but running calculations on the gpu
+ */
+std::vector<wave_dataf> naive_fourier_transform_gpu(uint32_t n_samples, const float *input, uint32_t in_spacing,
+    uint32_t samples_per_sec);
+
 }
