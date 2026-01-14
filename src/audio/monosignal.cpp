@@ -33,7 +33,8 @@ double monosignal::duration() const {
     return (double)data.size() / samples_per_sec;
 }
 
-monosignal generate_monosignal(const std::vector<wave_data> &waves, double time, uint32_t samples_per_sec,
+template <typename T>
+monosignal generate_monosignal(const std::vector<wave_data_t<T>> &waves, double time, uint32_t samples_per_sec,
     bool normalize, bool always_normalize) {
 
     monosignal sig{samples_per_sec, std::vector(std::size_t(time * samples_per_sec), 0.f)};
@@ -64,5 +65,8 @@ monosignal generate_monosignal(const std::vector<wave_data> &waves, double time,
 
     return sig;
 }
+
+template monosignal generate_monosignal<double>(const std::vector<wave_data> &, double, uint32_t, bool, bool);
+template monosignal generate_monosignal<float>(const std::vector<wave_dataf> &, double, uint32_t, bool, bool);
 
 }
