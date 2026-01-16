@@ -46,7 +46,7 @@ int main() {
     auto squeak_wav = read_wav_from_file("data/squeak-clip.wav");
     auto squeak_ms = squeak_wav.to_monosignal();
     std::cout << "Computing squeak fourier..." << std::flush;
-    auto squeak_fourier = naive_fourier_transform(squeak_ms.data.size(), squeak_ms.data.data(), 1, squeak_ms.samples_per_sec);
+    auto squeak_fourier = naive_ft(squeak_ms.data.size(), squeak_ms.data.data(), 1, squeak_ms.samples_per_sec);
     std::cout << " Done.\n";
 
     SDL_Init(SDL_INIT_EVERYTHING);

@@ -69,13 +69,13 @@ int main() {
     auto squeak_ms = squeak_wav.to_monosignal();
     
     auto cpu_fourier = time([&]{
-        return naive_fourier_transform(squeak_ms.data.size(), squeak_ms.data.data(), 1, squeak_ms.samples_per_sec);
+        return naive_ft(squeak_ms.data.size(), squeak_ms.data.data(), 1, squeak_ms.samples_per_sec);
     }, "CPU fourier");
 
     auto cpu_fourier_display = display_fourier(cpu_fourier, "CPU fourier");
 
     auto gpu_fourier = time([&]{
-        return naive_fourier_transform_gpu(squeak_ms.data.size(), squeak_ms.data.data(), 1, squeak_ms.samples_per_sec);
+        return naive_ft_gpu(squeak_ms.data.size(), squeak_ms.data.data(), 1, squeak_ms.samples_per_sec);
     }, "GPU fourier");
 
     auto gpu_fourier_display = display_fourier(gpu_fourier, "GPU fourier");
