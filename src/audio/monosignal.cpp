@@ -26,11 +26,19 @@ audio_buffer monosignal::make_audio_buffer() const {
 }
 
 std::vector<wave_data> monosignal::fourier_transform() const {
-    return naive_fourier_transform(data.size(), data.data(), 1, samples_per_sec);
+    return naive_ft(data.size(), data.data(), 1, samples_per_sec);
 }
 
 double monosignal::duration() const {
     return (double)data.size() / samples_per_sec;
+}
+
+void monosignal::play() const {
+    auto ab = make_audio_buffer();
+    audio::sound_obj sound(global_engine, ab);
+
+    ma_sound_start(&sound);
+    while (ma_sound_is_playing(&sound));
 }
 
 template <typename T>

@@ -5,16 +5,6 @@
 
 namespace fs = std::filesystem;
 
-static void play_wav_to_completion(const audio::wav_signal &w) {
-    auto ms = w.to_monosignal();
-    auto ab = ms.make_audio_buffer();
-    audio::sound_obj sound(audio::global_engine, ab);
-
-    ma_sound_start(&sound);
-
-    while (ma_sound_is_playing(&sound));
-}
-
 int main() {
     fs::path file("data/squeak.wav");
     fs::path file2("data/gen/squeak2.wav");
@@ -26,11 +16,11 @@ int main() {
     
     std::cout << "read 2 ---------------\n";
     auto wav2 = audio::read_wav_from_file(file2);
-    play_wav_to_completion(wav2);
+    wav2.to_monosignal().play();
 
     std::cout << "read 3 ---------------\n";
     auto wav3 = audio::read_wav_from_file(file3);
-    play_wav_to_completion(wav3);
+    wav3.to_monosignal().play();
 
     return 0;
 }

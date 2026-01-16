@@ -8,14 +8,6 @@
 #include "audio.hpp"
 #include "gpu.hpp"
 
-void play_monosig(const audio::monosignal &ms) {
-    auto ab = ms.make_audio_buffer();
-    audio::sound_obj sound(audio::global_engine, ab);
-
-    ma_sound_start(&sound);
-    while (ma_sound_is_playing(&sound));
-}
-
 auto time(auto lambda, const char *str) {
     namespace chr = std::chrono;
     auto start = chr::system_clock::now();
@@ -92,13 +84,13 @@ int main() {
     }, "GPU reconstruction of GPU fourier");
 
     std::cout << "Original:" << std::endl;
-    play_monosig(squeak_ms);
+    squeak_ms.play();
     std::cout << "CPU reconstructed of CPU fourier:" << std::endl;
-    play_monosig(cc_recon);
+    cc_recon.play();
     std::cout << "CPU reconstructed of GPU fourier:" << std::endl;
-    play_monosig(cg_recon);
+    cg_recon.play();
     std::cout << "GPU reconstructed of GPU fourier:" << std::endl;
-    play_monosig(gg_recon);
+    gg_recon.play();
 
     std::cout << "Waiting for input...";
     std::getchar();

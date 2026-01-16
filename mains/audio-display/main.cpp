@@ -14,8 +14,6 @@ int main() {
 
     auto wav_sig = audio::read_wav_from_file("data/squeak.wav");
     auto monosig = wav_sig.to_monosignal();
-    auto aud_buf = monosig.make_audio_buffer();
-    audio::sound_obj sound(audio::global_engine, aud_buf);
 
     // actually drawing the wavform
     int width = 32768;
@@ -36,7 +34,7 @@ int main() {
     SDL_RenderCopy(renderer, wave_texture, nullptr, &dest_rect);
     SDL_RenderPresent(renderer);
 
-    ma_sound_start(&sound);
+    monosig.play();
     std::cout << "Press enter to continue...";
     std::getchar();
 

@@ -19,14 +19,6 @@ void print_wave_data(const std::vector<wave_data> &waves) {
     }
 }
 
-void play_monosig(const monosignal &ms) {
-    auto ab = ms.make_audio_buffer();
-    sound_obj sound(global_engine, ab);
-
-    ma_sound_start(&sound);
-    while (ma_sound_is_playing(&sound));
-}
-
 int main() {
     std::vector<wave_data> orig_waves{
         {0, 0.1, -0.2}, // the phase should collapse into the amplitude as A cos φ
@@ -84,10 +76,10 @@ int main() {
     auto squeak_ms_recon = generate_monosignal(squeak_fourier, squeak_ms.duration() * 2);
 
     std::cout << "Original:\n" << std::flush;
-    play_monosig(squeak_ms);
+    squeak_ms.play();
 
     std::cout << "Reconstructed:\n" << std::flush;
-    play_monosig(squeak_ms_recon);
+    squeak_ms_recon.play();
 
     while (true) {
         std::cout << "Enter sample count, enter nothing to quit: ";
@@ -100,13 +92,13 @@ int main() {
                 int count = std::stoi(line);
                 if (count == -1) {
                     std::cout << "Playing with all..." << std::endl;
-                    play_monosig(squeak_ms_recon);
+                    squeak_ms_recon.play();
                 } else if (count < 1 || std::size_t(count) > squeak_fourier.size()) {
                     std::cout << "Invalid number of waves.\n";
                 } else {
                     std::cout << "Playing with " << count << " highest..." << std::endl;
                     auto squeak_ms_reconn = generate_monosignal(std::vector(squeak_fourier.begin(), squeak_fourier.begin() + count), squeak_ms.duration() * 2);
-                    play_monosig(squeak_ms_reconn);
+                    squeak_ms_reconn.play();
                 }
             } catch (const std::invalid_argument &e) {
                 std::cout << "Err: " << e.what() << '\n';
