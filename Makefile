@@ -56,6 +56,8 @@ define GET_FILES
 $(shell find $1 -type f -not -path "*/.*" -name "*.$2")
 endef
 
+
+
 SHELL     := /bin/sh
 CC        := gcc
 CXX       := g++
@@ -63,7 +65,9 @@ NVCC      := nvcc
 CPPFLAGS  := -g -Wall -pedantic -Ofast -lpthread -lm $(shell pkg-config --libs sdl2)
 CCFLAGS   := $(CPPFLAGS) -std=c17 
 CXXFLAGS  := $(CPPFLAGS) -std=c++20
-NVCCFLAGS := -O3 -arch=sm_75 -std=c++20 -rdc=true -Xcompiler -Ofast,-g,-Wall,-std=c++20
+NVCCARCHS := 75 86
+NVCCFLAGS := $(foreach NVCCARCH,$(NVCCARCHS),-gencode arch=compute_$(NVCCARCH),code=sm_$(NVCCARCH)) \
+	     -O3 -std=c++20 -rdc=true -Xcompiler -Ofast,-g,-Wall,-std=c++20
 LINKFLAGS := -L/usr/local/cuda/lib64 -lcuda -lcudart
 PRJ_NAME  := $(notdir $(abspath .))
 
