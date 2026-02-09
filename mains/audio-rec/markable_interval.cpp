@@ -1,5 +1,6 @@
 #include "markable_interval.hpp"
 
+#include <concepts>
 #include <cstdint>
 #include <tuple>
 #include <vector>
@@ -255,6 +256,24 @@ bool markable_interval<T>::is_start_inclusive() const {
 template <typename T>
 bool markable_interval<T>::is_end_inclusive() const {
     return end_inclusive_;
+}
+
+template <typename T>
+markable_interval<T>::discrete_it markable_interval<T>::iter() const requires std::integral<T> {
+    return discrete_iter(marks_);
+}
+
+template <typename T>
+markable_interval<T>::discrete_it::discrete_it(const markable_interval<T> &marks_) : marks_{marks_} {}
+
+template <typename T>
+markable_interval<T>::discrete_it_iter markable_interval<T>::discrete_it::begin() const {
+    
+}
+
+template <typename T>
+markable_interval<T>::discrete_it_iter markable_interval<T>::discrete_it::end() const {
+
 }
 
 template struct markable_interval<uint32_t>;

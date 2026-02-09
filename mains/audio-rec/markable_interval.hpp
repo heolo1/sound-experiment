@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <cstdint>
 #include <tuple>
 #include <vector>
@@ -28,6 +29,9 @@ struct markable_interval {
         return inclusive ? end_inclusive : end_exclusive;
     }
 
+    struct discrete_it;
+    struct discrete_it_iter;
+
     markable_interval(const T &start, const T &end, bool start_inclusive = true, bool end_inclusive = false);
 
     void mark     (const T &start, const T &end, bool start_inclusive = true, bool end_inclusive = false);
@@ -53,6 +57,8 @@ struct markable_interval {
     bool is_start_inclusive() const;
     bool is_end_inclusive  () const;
 
+    discrete_it iter() const requires std::integral<T>;
+
 private:
     std::size_t index(const T &, mark_type) const;
     inline bool index_is_marked(std::size_t) const;
@@ -68,5 +74,29 @@ template <typename T>
 inline bool markable_interval<T>::index_is_marked(std::size_t s) const {
     return s % 2;
 }
+
+template <typename T>
+struct markable_interval<T>::discrete_it {
+    discrete_it(const markable_interval<T> &);
+
+    discrete_it_iter begin() const;
+    discrete_it_iter end() const;
+
+private:
+    const markable_interval<T> &marks_;
+};
+
+template <typename T>
+struct markable_interval<T>::discrete_it_iter {
+    discrete_it_iter(const markable_interval<T> &, T);
+
+    auto &operator<=>(const discrete_it_iter &) const;
+    const T &operator*() const;
+    discrete_it_iter &operator++();
+
+private:
+    const std::vector<std::tuple<T, bool>> &marks_;
+    T val;
+};
 
 extern template struct markable_interval<uint32_t>;
